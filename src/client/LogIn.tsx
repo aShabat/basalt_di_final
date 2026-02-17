@@ -1,12 +1,7 @@
 import axios from "axios"
-import { useState } from "react"
+import { MouseEvent, useState } from "react"
 import { useNavigate } from "react-router"
-
-async function login(name: string, password: string) {
-  console.log("sending")
-  const response = await axios.post("/api/login", { name, password })
-  return response.status === 200
-}
+import { postUser } from "./api"
 
 export default function LogIn() {
   const [name, setName] = useState("")
@@ -14,12 +9,12 @@ export default function LogIn() {
   const [error, setError] = useState("")
   const navigate = useNavigate()
 
-  async function handleSubmit(event: SubmitEvent) {
+  async function handleSubmit(event) {
     try {
       console.log("submit")
       event.preventDefault()
-      const loginOk = await login(name, password)
-      if (loginOk) {
+      const status = await postUser(name, password)
+      if (status === 200) {
         navigate(`/${name}/notes`)
       } else {
         setError("Wrong account name or password.")

@@ -1,11 +1,7 @@
 import axios from "axios"
 import { useState } from "react"
 import { useNavigate } from "react-router"
-
-async function signup(name: string, password: string) {
-  const response = await axios.post("/api/signup", { name, password })
-  return response.status === 200
-}
+import { postUserNew } from "./api"
 
 export default function SignUp() {
   const [name, setName] = useState("")
@@ -29,8 +25,8 @@ export default function SignUp() {
     }
 
     try {
-      const signupOk = await signup(name, password)
-      if (signupOk) {
+      const status = await postUserNew(name, password)
+      if (status === 200) {
         navigate(`/${name}/notes`)
       } else {
         setError("Signup error")
