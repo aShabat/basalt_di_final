@@ -1,5 +1,5 @@
 {
-  "name": "\u0017basalt",
+  "name": "basalt",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,15 +9,19 @@
     "build": "vite build"
   },
   "dependencies": {
-    "express": "^5.1.0",
+    "@neondatabase/serverless": "^1.0.2",
+    "axios": "^1.13.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-router": "^7.13.0",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3",
     "vite-express": "*"
   },
   "devDependencies": {
-    "@types/express": "^5.0.1",
+    "@types/express": "^5.0.6",
     "@types/node": "^22.15.2",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
