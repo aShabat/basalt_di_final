@@ -9,4 +9,5 @@ function assert<T>(variable: T | undefined): T {
 
 export default {
   DATABASE_URL: assert(process.env.DATABASE_URL),
+  JWT_SECRET: assert(process.env.JWT_KEY),
 }
