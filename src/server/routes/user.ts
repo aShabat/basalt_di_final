@@ -1,12 +1,18 @@
-import express from "express"
+import { Router } from "express"
 import { createUser, getUser } from "../models/users.js"
+import { sign } from "../auth.js"
+import bcrypt from "bcrypt"
 
-const router = express.Router()
+const router = Router()
+const saltRounds = 13
 
 router.post("/", async (req, res) => {
   const { name, password } = req.body
-  const user = await getUser(name)
-  if (user.password === password) {
+  const { user, hash } = await getUser(name)
+  const passwordMatch = await bcrypt.compare(password, hash)
+  if (passwordMatch) {
+    const token = sign(user)
+    res.cookie("AuthToken", token, { httpOnly: true })
     res.sendStatus(200)
   } else {
     res.sendStatus(201)
@@ -15,8 +21,11 @@ router.post("/", async (req, res) => {
 
 router.post("/new", async (req, res) => {
   const { name, password } = req.body
-  const result = await createUser(name, password)
-  if (result.length === 1) {
+  const hash = await bcrypt.hash(password, saltRounds)
+  const user = await createUser(name, hash)
+  if (user !== undefined) {
+    const token = sign(user)
+    res.cookie("AuthToken", token, { httpOnly: true })
     res.sendStatus(200)
   } else {
     res.sendStatus(201)
