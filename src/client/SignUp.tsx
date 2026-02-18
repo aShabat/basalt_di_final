@@ -18,7 +18,7 @@ export default function SignUp() {
     return true
   }
 
-  async function handleSubmit(event: SubmitEvent) {
+  async function handleSubmit(event) {
     event.preventDefault()
     if (!validateInput()) {
       return
@@ -37,33 +37,27 @@ export default function SignUp() {
     }
   }
   return (
-    <>
+    <div className={"authForm"}>
       {error !== "" && <div> {error} </div>}
-      <label>
-        Name:{" "}
-        <input
-          name="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </label>
-      <label>
-        Password:{" "}
-        <input
-          name="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </label>
-      <label>
-        Repeat Password:{" "}
-        <input
-          name="passwor_repeat"
-          value={secondPassword}
-          onChange={(e) => setSecondPassword(e.target.value)}
-        />
-      </label>
+      <label>Name: </label>
+      <input
+        name="name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <label>Password: </label>
+      <input
+        name="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <label>Repeat Password: </label>
+      <input
+        name="passwor_repeat"
+        value={secondPassword}
+        onChange={(e) => setSecondPassword(e.target.value)}
+      />
       <button onClick={handleSubmit}> Sign Up </button>
-    </>
+    </div>
   )
 }

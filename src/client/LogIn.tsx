@@ -1,5 +1,5 @@
 import axios from "axios"
-import { MouseEvent, useState } from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router"
 import { postUser } from "./api"
 
@@ -25,25 +25,21 @@ export default function LogIn() {
   }
 
   return (
-    <>
+    <div className={"authForm"}>
       {error !== "" && <div> {error} </div>}
-      <label>
-        Name:{" "}
-        <input
-          name="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </label>
-      <label>
-        Password:{" "}
-        <input
-          name="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </label>
+      <label>Name: </label>
+      <input
+        name="name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <label>Password: </label>
+      <input
+        name="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
       <button onClick={handleSubmit}> Log In </button>
-    </>
+    </div>
   )
 }
