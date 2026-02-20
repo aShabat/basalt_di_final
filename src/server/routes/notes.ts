@@ -1,55 +1,56 @@
 import { Router } from "express"
-import { getNoteTree } from "../models/notes.ts"
-import { NoteTree } from "../types.ts"
+import { getNotes } from "../models/notes.ts"
+import { Folder, Note } from "../types.ts"
 
 const router = Router()
 
-function stripContents(tree: NoteTree) {
-  const strippedTree = structuredClone(tree)
-  for (const key in strippedTree) {
-    if (typeof strippedTree[key] === "string") {
-      strippedTree[key] = ""
-    } else {
-      strippedTree[key] = stripContents(strippedTree[key])
-    }
+function stripContents(f: Folder): Folder {
+  return {
+    ...f,
+    subfolders: f.subfolders.map(stripContents),
+    notes: f.notes.map((n) => ({ ...n, contents: "" })),
   }
-  return strippedTree
 }
 
 router.get(":name/tree", async (req, res) => {
   const name = req.params.name
   if (req.user === undefined || req.user.name !== name) {
-    res.sendStatus(201)
+    res.sendStatus(401)
     return
   }
 
-  let tree = await getNoteTree(name)
-  tree = stripContents(tree)
+  const rootFolder = await getNotes(name)
 
-  res.json(tree)
+  res.json(stripContents(rootFolder))
 })
+
+function folderFind(folder: Folder, path: string[]): Folder | Note {
+  if (path.length === 0) return folder
+  const [p, ...rest] = path
+  const matchingNotes = folder.notes.filter((n) => n.title === p)
+  if (matchingNotes.length === 1 && path.length === 1) return matchingNotes[1]
+  const matchingFolders = folder.subfolders.filter((f) => f.title === p)
+  if (matchingFolders.length === 1) return folderFind(matchingFolders[0], rest)
+  throw new Error("couldn't go along the path")
+}
 
 router.get(":name/note/:path", async (req, res) => {
   const { name, path } = req.params
-  console.log(path.split("/"))
   if (req.user === undefined || req.user.name !== name) {
-    res.sendStatus(201)
+    res.sendStatus(401)
     return
   }
 
-  let tree: NoteTree | string = await getNoteTree(name)
-  for (const p in path.split("/")) {
-    if (typeof tree === "string" || tree[p] === undefined) {
-      res.sendStatus(404)
-      return
+  let rootFolder = await getNotes(name)
+  try {
+    const note = folderFind(rootFolder, path.split("/"))
+    if (note.type === "note") {
+      res.json(note)
     } else {
-      tree = tree[p]
+      res.sendStatus(404)
     }
-  }
-  if (typeof tree !== "string") {
+  } catch (_) {
     res.sendStatus(404)
-  } else {
-    res.send(tree)
   }
 })
 
