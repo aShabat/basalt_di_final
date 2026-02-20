@@ -1,5 +1,3 @@
-import { Request } from "express"
-
 export interface User {
   id: number
   name: string
@@ -13,5 +11,17 @@ declare global {
   }
 }
 
-type Tree<N> = Record<string, N>
-export interface NoteTree extends Tree<NoteTree | string> {}
+export interface Note {
+  type: "note"
+  id: number
+  title: string
+  contents: string
+}
+
+export interface Folder {
+  type: "folder"
+  id: number | undefined
+  title: string
+  notes: Note[]
+  subfolders: Folder[]
+}

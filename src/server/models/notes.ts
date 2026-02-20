@@ -1,49 +1,60 @@
-import { NoteTree } from "../types.ts"
+import { Folder, Note } from "../types.ts"
 import sql from "./sql.ts"
 import { getUser } from "./users.ts"
 
-interface Folder {
-  id: number
+interface FolderData {
+  id: number | null
   parent_id: number | null
   title: string
 }
 
-interface Note {
+interface NoteData {
   id: number
   parent_id: number | null
   title: string
   contents: string
 }
 
-function folderSubTree(
-  folders: Folder[],
-  notes: Note[],
-  id: number | null = null,
-) {
-  const tree: NoteTree = {}
-  for (const folder of folders) {
-    if (folder.parent_id === id) {
-      tree[folder.title] = folderSubTree(folders, notes, folder.id)
-    }
+function nullToUndefined<T>(value: T | null): T | undefined {
+  if (value === null) return undefined
+  return value
+}
+function genFolder(
+  folders: FolderData[],
+  notes: NoteData[],
+  { id, title }: FolderData = { id: null, title: "root", parent_id: null },
+): Folder {
+  return {
+    type: "folder",
+    id: nullToUndefined(id),
+    title: title,
+    subfolders: folders
+      .filter((f) => f.parent_id === id)
+      .map((f) => genFolder(folders, notes, f)),
+    notes: notes
+      .filter((n) => n.parent_id === id)
+      .map(
+        ({ id, title, contents }) =>
+          ({
+            type: "note",
+            id: nullToUndefined(id),
+            title: title,
+            contents: contents,
+          }) as Note,
+      ),
   }
-  for (const note of notes) {
-    if (note.parent_id === id) {
-      tree[note.title] = note.contents
-    }
-  }
-  return tree
 }
 
-export async function getNoteTree(name: string) {
+export async function getNotes(name: string) {
   const { user } = await getUser(name)
   const folders = (await sql.query(
     "select id, parent_id, title from folders where user_id = $1",
     [user.id],
-  )) as Folder[]
+  )) as FolderData[]
   const notes = (await sql.query(
     "select id, parent_id, title, contents from notes where user_id = $1",
-  )) as Note[]
+  )) as NoteData[]
 
-  let tree = folderSubTree(folders, notes)
+  let tree = genFolder(folders, notes)
   return tree
 }
