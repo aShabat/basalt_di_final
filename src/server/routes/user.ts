@@ -14,6 +14,10 @@ router.get("/", async (req, res) => {
   }
 })
 
+router.post("/logout", async (_, res) => {
+  res.clearCookie("AuthToken").sendStatus(200)
+})
+
 router.post("/", async (req, res) => {
   const { name, password } = req.body
   const { user, hash } = await getUser(name)
