@@ -7,6 +7,8 @@ import { useEffect, useState } from "react"
 import UserContext from "./UserContext"
 import { User } from "../server/types"
 import { getUser } from "./api"
+import Navbar from "./Navbar"
+import { stringify } from "querystring"
 
 function App() {
   const ctx = useState(undefined as User | undefined)
@@ -23,6 +25,7 @@ function App() {
 
   return (
     <UserContext value={ctx}>
+      <Navbar className="navbar" />
       <Routes>
         <Route path="notes/*" element={<Notes />} />
         <Route path="login" element={<LogIn />} />

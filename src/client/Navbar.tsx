@@ -1,11 +1,17 @@
 import { useContext } from "react"
 import UserContext from "./UserContext"
-import { NavLink, useNavigate } from "react-router"
+import { useNavigate } from "react-router"
 
 export default function Navbar({ className }: { className: string }) {
   const [user, setUser] = useContext(UserContext)
 
   const navigate = useNavigate()
+  function handleLogIn() {
+    navigate("/login")
+  }
+  function handleSignUp() {
+    navigate("/signup")
+  }
   function handleLogOut() {
     setUser(undefined)
     navigate("/")
@@ -15,12 +21,12 @@ export default function Navbar({ className }: { className: string }) {
     <div className={className}>
       {user ? (
         <>
-          <NavLink to="/login">log in</NavLink>
-          <NavLink to="/signup">sign up</NavLink>
+          <button onClick={handleLogOut}>log out</button>
         </>
       ) : (
         <>
-          <button onClick={handleLogOut}>log out</button>
+          <button onClick={handleLogIn}>log in</button>
+          <button onClick={handleSignUp}>sign up</button>
         </>
       )}
     </div>
