@@ -25,7 +25,7 @@ router.post("/", async (req, res) => {
   if (passwordMatch) {
     const token = sign(user)
     res.cookie("AuthToken", token, { httpOnly: true })
-    res.sendStatus(200)
+    res.status(200).json(user)
   } else {
     res.sendStatus(201)
   }
@@ -38,7 +38,7 @@ router.post("/new", async (req, res) => {
   if (user !== undefined) {
     const token = sign(user)
     res.cookie("AuthToken", token, { httpOnly: true })
-    res.sendStatus(200)
+    res.status(200).json(user)
   } else {
     res.sendStatus(201)
   }
