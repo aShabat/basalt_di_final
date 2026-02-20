@@ -1,9 +1,11 @@
 import axios from "axios"
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { useNavigate } from "react-router"
 import { postUserNew } from "./api"
+import UserContext from "./UserContext"
 
 export default function SignUp() {
+  const [_, setUser] = useContext(UserContext)
   const [name, setName] = useState("")
   const [password, setPassword] = useState("")
   const [secondPassword, setSecondPassword] = useState("")
@@ -25,8 +27,9 @@ export default function SignUp() {
     }
 
     try {
-      const status = await postUserNew(name, password)
+      const { status, user } = await postUserNew(name, password)
       if (status === 200) {
+        setUser(user)
         navigate(`/${name}/notes`)
       } else {
         setError("Signup error")

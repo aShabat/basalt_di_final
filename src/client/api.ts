@@ -14,10 +14,16 @@ export async function getUser() {
 
 export async function postUser(name: string, password: string) {
   const response = await axiosI.post("/user", { name, password })
-  return response.status
+  return {
+    status: response.status,
+    user: response.status === 200 ? (response.data as User) : undefined,
+  }
 }
 
 export async function postUserNew(name: string, password: string) {
   const response = await axiosI.post("/user/new", { name, password })
-  return response.status
+  return {
+    status: response.status,
+    user: response.status === 200 ? (response.data as User) : undefined,
+  }
 }

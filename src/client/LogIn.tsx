@@ -1,9 +1,11 @@
 import axios from "axios"
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { useNavigate } from "react-router"
 import { postUser } from "./api"
+import UserContext from "./UserContext"
 
 export default function LogIn() {
+  const [_, setUser] = useContext(UserContext)
   const [name, setName] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -13,8 +15,9 @@ export default function LogIn() {
     try {
       console.log("submit")
       event.preventDefault()
-      const status = await postUser(name, password)
+      const { status, user } = await postUser(name, password)
       if (status === 200) {
+        setUser(user)
         navigate(`/${name}/notes`)
       } else {
         setError("Wrong account name or password.")
