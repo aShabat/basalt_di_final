@@ -12,7 +12,8 @@ function stripContents(f: Folder): Folder {
   }
 }
 
-router.get(":name/tree", async (req, res) => {
+router.get("/:name/tree", async (req, res) => {
+  console.log("here")
   const name = req.params.name
   if (req.user === undefined || req.user.name !== name) {
     res.sendStatus(401)
@@ -34,7 +35,7 @@ function folderFind(folder: Folder, path: string[]): Folder | Note {
   throw new Error("couldn't go along the path")
 }
 
-router.get(":name/note/:path", async (req, res) => {
+router.get("/:name/note/*path", async (req, res) => {
   const { name, path } = req.params
   if (req.user === undefined || req.user.name !== name) {
     res.sendStatus(401)
@@ -43,7 +44,7 @@ router.get(":name/note/:path", async (req, res) => {
 
   let rootFolder = await getNotes(name)
   try {
-    const note = folderFind(rootFolder, path.split("/"))
+    const note = folderFind(rootFolder, path)
     if (note.type === "note") {
       res.json(note)
     } else {
