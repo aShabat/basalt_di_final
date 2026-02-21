@@ -25,3 +25,10 @@ export interface Folder {
   notes: Note[]
   subfolders: Folder[]
 }
+
+export interface ApiNote extends Omit<Note, "id"> {}
+
+export interface ApiFolder extends Omit<Folder, "id" | "notes" | "subfolders"> {
+  notes: string[]
+  subfolders: ApiFolder[]
+}
