@@ -12,14 +12,14 @@ declare global {
 }
 
 export interface Note {
-  type: "note"
+  kind: "note"
   id: number
   title: string
   contents: string
 }
 
 export interface Folder {
-  type: "folder"
+  kind: "folder"
   id: number | undefined
   title: string
   notes: Note[]

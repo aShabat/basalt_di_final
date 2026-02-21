@@ -25,7 +25,7 @@ function genFolder(
   { id, title }: FolderData = { id: null, title: "root", parent_id: null },
 ): Folder {
   return {
-    type: "folder",
+    kind: "folder",
     id: nullToUndefined(id),
     title: title,
     subfolders: folders
@@ -36,7 +36,7 @@ function genFolder(
       .map(
         ({ id, title, contents }) =>
           ({
-            type: "note",
+            kind: "note",
             id: nullToUndefined(id),
             title: title,
             contents: contents,
