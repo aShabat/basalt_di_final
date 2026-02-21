@@ -1,29 +1,23 @@
-import { Router } from "express"
+import { Request, Response, Router } from "express"
 import { getNotes } from "../models/notes.ts"
-import { Folder, Note } from "../types.ts"
+import { Folder, Note, ApiFolder, ApiNote } from "../types.ts"
 
 const router = Router()
 
-interface StrippedNote extends Omit<Note, "id"> {}
-
-interface StrippedFolder extends Omit<Folder, "id" | "notes" | "subfolders"> {
-  notes: string[]
-  subfolders: StrippedFolder[]
-}
-function stripContents(item: Folder | Note): StrippedFolder | StrippedNote {
+function stripContents(item: Folder | Note): ApiFolder | ApiNote {
   if (item.kind === "note") {
     return {
       kind: "note",
       contents: item.contents,
       title: item.title,
-    } as StrippedNote
+    } as ApiNote
   } else {
     return {
       kind: "folder",
       title: item.title,
       subfolders: item.subfolders.map(stripContents),
       notes: item.notes.map((n) => n.title),
-    } as StrippedFolder
+    } as ApiFolder
   }
 }
 
@@ -34,8 +28,10 @@ function folderFind(folder: Folder, title: string): Folder | Note {
   if (matchingNotes.length === 1) return matchingNotes[0]
   throw new Error("error")
 }
-router.get("/:name/*path", async (req, res) => {
-  const { name, path } = req.params
+async function handleGetNotes(req: Request, res: Response) {
+  const name = req.params.name
+  const path = req.params.path ? req.params.path : []
+  console.log(name, path, req.user)
   if (req.user === undefined || req.user.name !== name) {
     res.sendStatus(401)
     return
@@ -43,6 +39,7 @@ router.get("/:name/*path", async (req, res) => {
 
   try {
     let returnItem: Folder | Note = await getNotes(name)
+    console.log(returnItem)
     let step = 0
     while (returnItem.kind === "folder" && step < path.length) {
       returnItem = folderFind(returnItem, path[step])
@@ -51,7 +48,13 @@ router.get("/:name/*path", async (req, res) => {
     if (step < path.length) throw new Error()
 
     res.json(stripContents(returnItem))
-  } catch (_) {
+  } catch (err) {
+    console.log(err)
     res.sendStatus(404)
   }
-})
+}
+
+router.get("/:name", handleGetNotes)
+router.get("/:name/*path", handleGetNotes)
+
+export default router
