@@ -53,6 +53,7 @@ export async function getNotes(name: string) {
   )) as FolderData[]
   const notes = (await sql.query(
     "select id, parent_id, title, contents from notes where user_id = $1",
+    [user.id],
   )) as NoteData[]
 
   let tree = genFolder(folders, notes)
