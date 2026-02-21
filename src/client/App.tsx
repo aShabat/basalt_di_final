@@ -13,22 +13,22 @@ function App() {
   const ctx = useState(undefined as User | undefined)
 
   useEffect(() => {
+    const [_, setUser] = ctx
     ;(async () => {
       const user = await getUser()
       if (user) {
-        const [_, setUser] = ctx
         setUser(user)
       }
     })()
-  })
+  }, [])
 
   return (
     <UserContext value={ctx}>
       <Navbar className="navbar" />
       <Routes>
-        <Route path="notes/*" element={<Notes />} />
-        <Route path="login" element={<LogIn />} />
-        <Route path="signup" element={<SignUp />} />
+        <Route path="/:user/*" element={<Notes />} />
+        <Route path="/login" element={<LogIn />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route path="*" element={<Redirect path={"/notes"} />} />
       </Routes>
     </UserContext>
