@@ -1,6 +1,7 @@
 import { useContext } from "react"
 import UserContext from "./UserContext"
 import { useNavigate } from "react-router"
+import { postLogout } from "./api"
 
 export default function Navbar({ className }: { className: string }) {
   const [user, setUser] = useContext(UserContext)
@@ -14,6 +15,7 @@ export default function Navbar({ className }: { className: string }) {
   }
   function handleLogOut() {
     setUser(undefined)
+    postLogout()
     navigate("/")
   }
 

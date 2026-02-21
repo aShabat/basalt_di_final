@@ -27,3 +27,8 @@ export async function postUserNew(name: string, password: string) {
     user: response.status === 200 ? (response.data as User) : undefined,
   }
 }
+
+export async function postLogout() {
+  axiosI.post("/user/logout")
+}
+
