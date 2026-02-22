@@ -1,4 +1,3 @@
-import axios from "axios"
 import { useContext, useState } from "react"
 import { useNavigate } from "react-router"
 import { postUser } from "./api"
@@ -11,6 +10,7 @@ export default function LogIn() {
   const [error, setError] = useState("")
   const navigate = useNavigate()
 
+  // @ts-ignore
   async function handleSubmit(event) {
     try {
       console.log("submit")

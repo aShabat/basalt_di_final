@@ -20,6 +20,7 @@ export default function SignUp() {
     return true
   }
 
+  // @ts-ignore
   async function handleSubmit(event) {
     event.preventDefault()
     if (!validateInput()) {

@@ -13,7 +13,9 @@ export default function Navbar({ className }: { className: string }) {
   function handleSignUp() {
     navigate("/signup")
   }
-  function handleLogOut() {
+  // @ts-ignore
+  function handleLogOut(event) {
+    event.preventDefault()
     setUser(undefined)
     postLogout()
     navigate("/")
