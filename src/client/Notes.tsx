@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import type { ApiFolder } from "../server/types"
-import { getFolderNote } from "./api"
+import { getFolder } from "./api"
 import { useNavigate, useParams } from "react-router"
 import NoteTree from "./NoteTree"
 
@@ -17,7 +17,7 @@ export default function Notes({ className }: Props) {
         navigate("/")
         return
       }
-      const fetchRoot = await getFolderNote(user, [])
+      const fetchRoot = await getFolder(user)
       if (fetchRoot && fetchRoot.kind === "folder") {
         setRoot(fetchRoot)
       }

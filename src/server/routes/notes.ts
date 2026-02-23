@@ -1,60 +1,58 @@
-import { Request, Response, Router } from "express"
-import { getNotes } from "../models/notes.ts"
+import { Router } from "express"
 import { Folder, Note, ApiFolder, ApiNote } from "../types.ts"
+import { getUser } from "../models/users.ts"
+import { getFolders, getNote } from "../models/notes.ts"
 
 const router = Router()
 
-function stripContents(item: Folder | Note): ApiFolder | ApiNote {
-  if (item.kind === "note") {
-    return {
-      kind: "note",
-      contents: item.contents,
-      title: item.title,
-    } as ApiNote
-  } else {
-    return {
-      kind: "folder",
-      title: item.title,
-      subfolders: item.subfolders.map(stripContents),
-      notes: item.notes.map((n) => n.title),
-    } as ApiFolder
+function folderToApi(folder: Folder): ApiFolder {
+  return {
+    kind: "folder",
+    title: folder.title,
+    children: folder.children.map(folderToApi),
+    notes: folder.notes.map((n) => n.title),
   }
 }
 
-function folderFind(folder: Folder, title: string): Folder | Note {
-  const matchingFolders = folder.subfolders.filter((s) => s.title === title)
-  if (matchingFolders.length === 1) return matchingFolders[0]
-  const matchingNotes = folder.notes.filter((n) => n.title === title)
-  if (matchingNotes.length === 1) return matchingNotes[0]
-  throw new Error("error")
-}
-async function handleGetNotes(req: Request, res: Response) {
-  const name = req.params.name
-  const path = req.params.path ? req.params.path : []
-  console.log(name, path, req.user)
-  if (req.user === undefined || req.user.name !== name) {
-    res.sendStatus(401)
-    return
-  }
-
+router.get("/:name", async (req, res) => {
   try {
-    let returnItem: Folder | Note = await getNotes(name)
-    console.log(returnItem)
-    let step = 0
-    while (returnItem.kind === "folder" && step < path.length) {
-      returnItem = folderFind(returnItem, path[step])
-      step++
-    }
-    if (step < path.length) throw new Error()
+    const { name } = req.params
+    const { user } = await getUser(name)
+    const folders = await getFolders(user.id)
 
-    res.json(stripContents(returnItem))
+    res.json(folderToApi(folders))
   } catch (err) {
     console.log(err)
     res.sendStatus(404)
   }
-}
+})
 
-router.get("/:name", handleGetNotes)
-router.get("/:name/*path", handleGetNotes)
+function findNote(folder: Folder, path: string[]): Note {
+  const pathErr = new Error(`wrong path: ${path}`)
+  if (path.length === 0) throw pathErr
+  if (path.length === 1) {
+    const matched = folder.notes.filter((n) => n.title === path[0])
+    if (matched.length === 1) return matched[0]
+    throw pathErr
+  }
+
+  const [first, ...rest] = path
+  const matched = folder.children.filter((f) => f.title === first)
+  if (matched.length === 1) return findNote(matched[0], rest)
+  throw pathErr
+}
+router.get("/:name/*path", async (req, res) => {
+  try {
+    const { name, path } = req.params
+    const { user } = await getUser(name)
+    const folders = await getFolders(user.id)
+    const id = findNote(folders, path).id
+    const note = await getNote(id)
+    res.json(note)
+  } catch (err) {
+    console.log(err)
+    res.sendStatus(404)
+  }
+})
 
 export default router

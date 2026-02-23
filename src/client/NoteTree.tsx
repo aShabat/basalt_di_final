@@ -9,7 +9,7 @@ export default function NoteTree({ className, root }: Props) {
     <div className={className}>
       {root ? (
         <ul>
-          {root.subfolders.map((s) => (
+          {root.children.map((s) => (
             <li key={s.title}> {s.title} </li>
           ))}
         </ul>

@@ -15,7 +15,13 @@ export interface Note {
   kind: "note"
   id: number
   title: string
-  contents: string
+  contents?: string
+}
+
+export interface ApiNote {
+  kind: "note"
+  title: string
+  contents?: string
 }
 
 export interface Folder {
@@ -23,12 +29,12 @@ export interface Folder {
   id: number | undefined
   title: string
   notes: Note[]
-  subfolders: Folder[]
+  children: Folder[]
 }
 
-export interface ApiNote extends Omit<Note, "id"> {}
-
-export interface ApiFolder extends Omit<Folder, "id" | "notes" | "subfolders"> {
+export interface ApiFolder {
+  kind: "folder"
+  title: string
   notes: string[]
-  subfolders: ApiFolder[]
+  children: ApiFolder[]
 }

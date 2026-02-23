@@ -1,5 +1,5 @@
 import axios from "axios"
-import type { ApiFolder, ApiNote, User } from "../server/types"
+import type { ApiFolder, User } from "../server/types"
 
 const axiosI = axios.create({ baseURL: "/api" })
 
@@ -32,10 +32,9 @@ export async function postLogout() {
   axiosI.post("/user/logout")
 }
 
-export async function getFolderNote(name: string, path: string[]) {
-  const url = [name, ...path].map((s) => "/" + s).join("")
-  const response = await axiosI.get("/notes" + url)
+export async function getFolder(name: string) {
+  const response = await axiosI.get(`/notes/${name}`)
   if (response.status !== 200) return undefined
-  const data = response.data as ApiFolder | ApiNote
+  const data = response.data as ApiFolder
   return data
 }
