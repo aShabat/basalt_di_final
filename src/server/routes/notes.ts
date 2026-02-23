@@ -48,7 +48,7 @@ router.get("/:name/*path", async (req, res) => {
     const folders = await getFolders(user.id)
     const id = findNote(folders, path).id
     const note = await getNote(id)
-    res.json(note)
+    res.send(note.contents)
   } catch (err) {
     console.log(err)
     res.sendStatus(404)
