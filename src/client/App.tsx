@@ -5,12 +5,11 @@ import Notes from "./Notes"
 import Redirect from "./Redirect"
 import { useEffect, useState } from "react"
 import UserContext from "./UserContext"
-import { User } from "../server/types"
 import { getUser } from "./api"
 import Navbar from "./Navbar"
 
 function App() {
-  const ctx = useState(undefined as User | undefined)
+  const ctx = useState<string>()
 
   useEffect(() => {
     const [_, setUser] = ctx

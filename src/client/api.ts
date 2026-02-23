@@ -6,7 +6,7 @@ const axiosI = axios.create({ baseURL: "/api" })
 export async function getUser() {
   const response = await axiosI.get("/user")
   if (response.status === 200) {
-    return response.data as User
+    return response.data as string
   } else {
     return undefined
   }
@@ -37,4 +37,9 @@ export async function getFolder(name: string) {
   if (response.status !== 200) return undefined
   const data = response.data as ApiFolder
   return data
+}
+
+export async function getNote(user: string, path: string) {
+  const response = await axiosI.get(`/notes/${user}/${path}`)
+  return response.data as string
 }

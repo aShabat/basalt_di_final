@@ -3,12 +3,15 @@ import type { ApiFolder } from "../server/types"
 import { getFolder } from "./api"
 import { useNavigate, useParams } from "react-router"
 import NoteTree from "./NoteTree"
+import NoteView from "./NoteView"
 
 interface Props {
   className?: string
 }
 export default function Notes({ className }: Props) {
+  const [edit, useEdit] = useState(false)
   const { user } = useParams()
+  const p = useParams()
   const [root, setRoot] = useState<ApiFolder>()
   const navigate = useNavigate()
   useEffect(() => {
@@ -26,6 +29,7 @@ export default function Notes({ className }: Props) {
   return (
     <div className={className}>
       <NoteTree root={root} />
+      <NoteView edit={edit} />
     </div>
   )
 }
