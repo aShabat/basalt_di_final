@@ -8,7 +8,7 @@ const saltRounds = 13
 
 router.get("/", async (req, res) => {
   if (req.user !== undefined) {
-    res.json(req.user)
+    res.send(req.user.name)
   } else {
     res.sendStatus(201)
   }
