@@ -9,11 +9,16 @@ interface Props {
   className?: string
 }
 export default function Notes({ className }: Props) {
-  const [edit, useEdit] = useState(false)
+  const [edit, setEdit] = useState(false)
   const { user } = useParams()
-  const p = useParams()
   const [root, setRoot] = useState<ApiFolder>()
   const navigate = useNavigate()
+
+  // @ts-ignore
+  function toggleEdit(e) {
+    e.preventDefault()
+    setEdit(!edit)
+  }
   useEffect(() => {
     ;(async () => {
       if (!user) {
@@ -28,6 +33,7 @@ export default function Notes({ className }: Props) {
   }, [])
   return (
     <div className={className}>
+      <button onClick={toggleEdit}> edit </button>
       <NoteTree root={root} />
       <NoteView edit={edit} />
     </div>

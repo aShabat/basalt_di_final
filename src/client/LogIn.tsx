@@ -18,7 +18,7 @@ export default function LogIn() {
       const { status, user } = await postUser(name, password)
       if (status === 200) {
         setUser(user)
-        navigate(`/${name}/notes`)
+        navigate(`/${name}`)
       } else {
         setError("Wrong account name or password.")
       }

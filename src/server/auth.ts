@@ -17,10 +17,13 @@ export function verify(token: string) {
 
 export function authMiddleware(
   req: Request,
-  _res: Response,
+  res: Response,
   next: NextFunction,
 ) {
   const token = req.cookies["AuthToken"]
   req.user = verify(token)
   next()
+  if (!req.user) {
+    res.clearCookie("AuthToken")
+  }
 }

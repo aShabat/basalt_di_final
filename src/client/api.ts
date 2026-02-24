@@ -1,5 +1,5 @@
 import axios from "axios"
-import type { ApiFolder, User } from "../server/types"
+import type { ApiFolder } from "../server/types"
 
 const axiosI = axios.create({ baseURL: "/api" })
 
@@ -16,7 +16,7 @@ export async function postUser(name: string, password: string) {
   const response = await axiosI.post("/user", { name, password })
   return {
     status: response.status,
-    user: response.status === 200 ? (response.data as User) : undefined,
+    user: response.status === 200 ? (response.data as string) : undefined,
   }
 }
 
@@ -24,7 +24,7 @@ export async function postUserNew(name: string, password: string) {
   const response = await axiosI.post("/user/new", { name, password })
   return {
     status: response.status,
-    user: response.status === 200 ? (response.data as User) : undefined,
+    user: response.status === 200 ? (response.data as string) : undefined,
   }
 }
 

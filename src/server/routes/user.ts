@@ -22,6 +22,8 @@ router.post("/", async (req, res) => {
     const token = sign(user)
     res.cookie("AuthToken", token, { httpOnly: true })
     res.status(200).json(user)
+
+    req.user = user
   } else {
     res.sendStatus(201)
   }
@@ -35,6 +37,8 @@ router.post("/new", async (req, res) => {
     const token = sign(user)
     res.cookie("AuthToken", token, { httpOnly: true })
     res.status(200).json(user)
+
+    req.user = user
   } else {
     res.sendStatus(201)
   }

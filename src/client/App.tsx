@@ -2,11 +2,11 @@ import { Route, Routes } from "react-router"
 import LogIn from "./LogIn"
 import SignUp from "./SignUp"
 import Notes from "./Notes"
-import Redirect from "./Redirect"
 import { useEffect, useState } from "react"
 import UserContext from "./UserContext"
 import { getUser } from "./api"
 import Navbar from "./Navbar"
+import Home from "./Home"
 
 function App() {
   const ctx = useState<string>()
@@ -19,7 +19,7 @@ function App() {
         setUser(user)
       }
     })()
-  }, [])
+  })
 
   return (
     <UserContext value={ctx}>
@@ -28,7 +28,7 @@ function App() {
         <Route path="/:user/*" element={<Notes />} />
         <Route path="/login" element={<LogIn />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="*" element={<Redirect path={"/notes"} />} />
+        <Route path="*" element={<Home />} />
       </Routes>
     </UserContext>
   )
