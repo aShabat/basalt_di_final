@@ -4,11 +4,10 @@ import { getFolder } from "./api"
 import { useNavigate, useParams } from "react-router"
 import NoteTree from "./NoteTree"
 import NoteView from "./NoteView"
+import Props from "./Props"
 
-interface Props {
-  className?: string
-}
-export default function Notes({ className }: Props) {
+interface NotesProps extends Props {}
+export default function Notes({ className, style }: NotesProps) {
   const [edit, setEdit] = useState(false)
   const { user } = useParams()
   const [root, setRoot] = useState<ApiFolder>()
@@ -32,10 +31,21 @@ export default function Notes({ className }: Props) {
     })()
   }, [])
   return (
-    <div className={className}>
-      <button onClick={toggleEdit}> edit </button>
-      <NoteTree root={root} />
-      <NoteView edit={edit} />
+    <div
+      className={className}
+      style={{
+        ...style,
+        display: "grid",
+        gridTemplateColumns: "20% 1fr",
+        gridTemplateRows: "50px 1fr",
+      }}
+    >
+      <NoteTree root={root} style={{ gridRow: 2, gridColumn: 1 }} />
+      <NoteView
+        edit={edit}
+        setEdit={setEdit}
+        style={{ gridRow: 2, gridColumn: 2 }}
+      />
     </div>
   )
 }

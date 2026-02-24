@@ -2,25 +2,30 @@ import { useContext, useState } from "react"
 import { ApiFolder } from "../server/types"
 import { useNavigate } from "react-router"
 import UserContext from "./UserContext"
+import Props from "./Props"
 
-interface NoteRowProps {
+interface NoteRowProps extends Props {
   title: string
   path: string
 }
 
-function NoteRow({ title, path }: NoteRowProps) {
+function NoteRow({ title, path, className, style }: NoteRowProps) {
   const navigate = useNavigate()
   function handleClick() {
     navigate(path)
   }
-  return <li onClick={handleClick}>{title}</li>
+  return (
+    <li className={className} style={style} onClick={handleClick}>
+      {title}
+    </li>
+  )
 }
 
-interface FolderRowProps {
+interface FolderRowProps extends Props {
   folder: ApiFolder
   path: string
 }
-function FolderRow({ folder, path }: FolderRowProps) {
+function FolderRow({ folder, path, className, style }: FolderRowProps) {
   const [open, setOpen] = useState(false)
   const children = folder.children.map((f) => (
     <FolderRow folder={f} path={`${path}/${f.title}`} />
@@ -33,7 +38,7 @@ function FolderRow({ folder, path }: FolderRowProps) {
     setOpen(!open)
   }
   return (
-    <li>
+    <li className={className} style={style}>
       <span onClick={handleClick}>{folder.title}</span>
       {open ? (
         <ul>
@@ -47,19 +52,23 @@ function FolderRow({ folder, path }: FolderRowProps) {
   )
 }
 
-interface TreeProps {
-  className?: string
+interface TreeProps extends Props {
   root?: ApiFolder
 }
-export default function NoteTree({ className, root }: TreeProps) {
+export default function NoteTree({ className, style, root }: TreeProps) {
   const [user, _] = useContext(UserContext)
+  const children = root?.children.map((f) => (
+    <FolderRow folder={f} path={`/${user}/${f.title}`} />
+  ))
+  const notes = root?.notes.map((t) => (
+    <NoteRow title={t} path={`/${user}/${t}`} />
+  ))
   return (
-    <div className={className}>
+    <div className={className} style={style}>
       {root ? (
         <ul>
-          {root.children.map((f) => (
-            <FolderRow folder={f} path={`/${user}/${f.title}`} />
-          ))}
+          {children}
+          {notes}
         </ul>
       ) : (
         "empty"

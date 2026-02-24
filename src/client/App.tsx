@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router"
 import LogIn from "./LogIn"
 import SignUp from "./SignUp"
 import Notes from "./Notes"
-import { useEffect, useState } from "react"
+import { ComponentProps, useEffect, useState } from "react"
 import UserContext from "./UserContext"
 import { getUser } from "./api"
 import Navbar from "./Navbar"
@@ -23,13 +23,15 @@ function App() {
 
   return (
     <UserContext value={ctx}>
-      <Navbar className="navbar" />
-      <Routes>
-        <Route path="/:user/*" element={<Notes />} />
-        <Route path="/login" element={<LogIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="*" element={<Home />} />
-      </Routes>
+      <div style={{ display: "grid", gridTemplateRows: "50px 1fr" }}>
+        <Navbar className="navbar" style={{ gridRow: 1 }} />
+        <Routes>
+          <Route path="/:user/*" element={<Notes style={{ gridRow: 2 }} />} />
+          <Route path="/login" element={<LogIn style={{ gridRow: 2 }} />} />
+          <Route path="/signup" element={<SignUp style={{ gridRow: 2 }} />} />
+          <Route path="*" element={<Home />} />
+        </Routes>
+      </div>
     </UserContext>
   )
 }

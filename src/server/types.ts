@@ -15,13 +15,13 @@ export interface Note {
   kind: "note"
   id: number
   title: string
-  contents?: string
+  content?: string
 }
 
 export interface ApiNote {
   kind: "note"
   title: string
-  contents?: string
+  content?: string
 }
 
 export interface Folder {
@@ -37,4 +37,10 @@ export interface ApiFolder {
   title: string
   notes: string[]
   children: ApiFolder[]
+}
+
+export interface ApiPostNote {
+  kind: "folder" | "note"
+  title: string
+  content?: string
 }

@@ -11,7 +11,7 @@ interface NoteData {
   id: number
   parent_id: number | null
   title: string
-  contents?: string
+  content?: string
 }
 
 function nullToUndefined<T>(value: T | null): T | undefined {
@@ -60,13 +60,50 @@ export async function getFolders(id: number) {
 
 export async function getNote(id: number) {
   const [note] = (await sql.query(
-    "select id, parent_id title, contents from notes where id = $1",
+    "select id, parent_id, title, content from notes where id = $1",
     [id],
   )) as NoteData[]
   return {
     kind: "note",
     id: note.id,
     title: note.title,
-    contents: note.contents,
+    content: note.content,
+  } as Note
+}
+
+export async function createFolder(
+  user_id: number,
+  parent_id: number | undefined,
+  title: string,
+) {
+  const [folder] = (await sql.query(
+    "insert into folders parent_id, user_id, title ($1, $2, $3) returning id, parent_id, title",
+    [parent_id, user_id, title],
+  )) as FolderData[]
+
+  return {
+    kind: "folder",
+    id: folder.id || undefined,
+    title: folder.title,
+    children: [],
+    notes: [],
+  } as Folder
+}
+
+export async function createNote(
+  user_id: number,
+  parent_id: number | undefined,
+  title: string,
+  content: string,
+) {
+  const [note] = (await sql.query(
+    "insert into notes (parent_id, user_id, title, content) values ($1, $2, $3, $4) on conflict on constraint user_folder_title do update set content=excluded.content returning id, parent_id, title, content",
+    [parent_id, user_id, title, content],
+  )) as NoteData[]
+  return {
+    kind: "note",
+    id: note.id,
+    title: note.title,
+    content: note.content,
   } as Note
 }

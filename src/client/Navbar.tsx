@@ -1,9 +1,12 @@
-import { useContext } from "react"
+import { CSSProperties, useContext } from "react"
 import UserContext from "./UserContext"
 import { useNavigate } from "react-router"
 import { postLogout } from "./api"
+import Props from "./Props"
 
-export default function Navbar({ className }: { className: string }) {
+interface NavbarProps extends Props {}
+
+export default function Navbar({ className, style }: NavbarProps) {
   const [user, setUser] = useContext(UserContext)
 
   const navigate = useNavigate()
@@ -22,7 +25,7 @@ export default function Navbar({ className }: { className: string }) {
   }
 
   return (
-    <div className={className}>
+    <div className={className} style={style}>
       {user ? (
         <>
           <button onClick={handleLogOut}>log out</button>

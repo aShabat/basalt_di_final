@@ -1,5 +1,5 @@
 import axios from "axios"
-import type { ApiFolder } from "../server/types"
+import type { ApiFolder, ApiPostNote } from "../server/types"
 
 const axiosI = axios.create({ baseURL: "/api" })
 
@@ -41,5 +41,10 @@ export async function getFolder(name: string) {
 
 export async function getNote(user: string, path: string) {
   const response = await axiosI.get(`/notes/${user}/${path}`)
+  return response.data as string
+}
+
+export async function postNote(user: string, path: string, note: ApiPostNote) {
+  const response = await axiosI.post(`/notes/${user}/${path}`, note)
   return response.data as string
 }

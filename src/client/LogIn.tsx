@@ -2,8 +2,10 @@ import { useContext, useState } from "react"
 import { useNavigate } from "react-router"
 import { postUser } from "./api"
 import UserContext from "./UserContext"
+import Props from "./Props"
 
-export default function LogIn() {
+interface LogInProps extends Props {}
+export default function LogIn({ className, style }: LogInProps) {
   const [_, setUser] = useContext(UserContext)
   const [name, setName] = useState("")
   const [password, setPassword] = useState("")
@@ -28,7 +30,7 @@ export default function LogIn() {
   }
 
   return (
-    <div className={"authForm"}>
+    <div className={className} style={style}>
       {error !== "" && <div> {error} </div>}
       <label>Name: </label>
       <input
