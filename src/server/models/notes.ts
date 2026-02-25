@@ -77,7 +77,10 @@ export async function createFolder(
   title: string,
 ) {
   const [folder] = (await sql.query(
-    "insert into folders parent_id, user_id, title ($1, $2, $3) returning id, parent_id, title",
+    `insert into folders (parent_id, user_id, title)
+    values ($1, $2, $3)
+    on conflict on constraint user_parent_title do nothing
+    returning id, parent_id, title`,
     [parent_id, user_id, title],
   )) as FolderData[]
 
@@ -97,7 +100,10 @@ export async function createNote(
   content: string,
 ) {
   const [note] = (await sql.query(
-    "insert into notes (parent_id, user_id, title, content) values ($1, $2, $3, $4) on conflict on constraint user_folder_title do update set content=excluded.content returning id, parent_id, title, content",
+    `insert into notes (parent_id, user_id, title, content)
+    values ($1, $2, $3, $4)
+    on conflict on constraint user_folder_title do update set content=excluded.content
+    returning id, parent_id, title, content`,
     [parent_id, user_id, title, content],
   )) as NoteData[]
   return {

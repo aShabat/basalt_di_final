@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router"
 import LogIn from "./LogIn"
 import SignUp from "./SignUp"
 import Notes from "./Notes"
-import { ComponentProps, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import UserContext from "./UserContext"
 import { getUser } from "./api"
 import Navbar from "./Navbar"
@@ -23,7 +23,13 @@ function App() {
 
   return (
     <UserContext value={ctx}>
-      <div style={{ display: "grid", gridTemplateRows: "50px 1fr" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateRows: "50px 1fr",
+          height: "80vh",
+        }}
+      >
         <Navbar className="navbar" style={{ gridRow: 1 }} />
         <Routes>
           <Route path="/:user/*" element={<Notes style={{ gridRow: 2 }} />} />

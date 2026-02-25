@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import { marked } from "marked"
-import { useParams } from "react-router"
+import { useNavigate, useParams } from "react-router"
 import { getNote, postNote } from "./api"
 import UserContext from "./UserContext"
 import Props from "./Props"
@@ -19,13 +19,12 @@ function Editor({ serverNote, onChange, className, style }: EditorProps) {
 
   //@ts-ignore
   function handleChange() {
-    console.log(editor.current?.innerText)
     onChange(editor.current?.innerText)
   }
   return (
     <div
       className={className}
-      style={style}
+      style={{ ...style, overflow: "scroll", height: "100vh" }}
       ref={editor}
       contentEditable={"plaintext-only"}
       onInput={handleChange}
@@ -38,16 +37,29 @@ interface MarkdownViewProps extends Props {
 }
 
 function MarkdownView({ clientNote, className, style }: MarkdownViewProps) {
-  useEffect(() => {
-    console.log(clientNote)
-  }, [clientNote])
-
+  const view = useRef<HTMLDivElement>(null)
   const parsed = clientNote ? marked.parse(clientNote) : ""
+
+  const navigate = useNavigate()
+  useEffect(() => {
+    view.current?.addEventListener("click", (e) => {
+      // @ts-ignore
+      const a = e.target?.closest("a")
+      if (!a) return
+      const url = new URL(a.href)
+      console.log(url)
+      if (url.origin === window.location.origin) {
+        e.preventDefault()
+        navigate(url.pathname)
+      }
+    })
+  }, [])
   return (
     <div
       className={className}
-      style={style}
+      style={{ ...style, overflow: "scroll", height: "80vh" }}
       dangerouslySetInnerHTML={{ __html: parsed }}
+      ref={view}
     ></div>
   )
 }
@@ -73,12 +85,16 @@ export default function NoteView({
   }
 
   async function handleSave() {
-    const note = await postNote(user!, path!.slice(0, path!.lastIndexOf("/")), {
-      kind: "note",
-      title: path!.split("/").slice(-1)[0],
-      content: clientNote,
-    })
-    setServerNote(note)
+    const status = await postNote(
+      user!,
+      path!.slice(0, path!.lastIndexOf("/")),
+      {
+        kind: "note",
+        title: path!.split("/").slice(-1)[0],
+        content: clientNote,
+      },
+    )
+    if (status === 200) setServerNote(clientNote)
   }
 
   useEffect(() => {
@@ -99,17 +115,10 @@ export default function NoteView({
         gridTemplateRows: "50px 1fr",
       }}
     >
-      <button onClick={toggleEdit} style={{ gridRow: 1 }}>
-        {" "}
-        edit{" "}
-      </button>
-      {edit ? (
-        <button onClick={handleSave} style={{ gridRow: 1 }}>
-          save
-        </button>
-      ) : (
-        <></>
-      )}
+      <div style={{ gridRow: 1 }}>
+        <button onClick={toggleEdit}> edit </button>
+        {edit ? <button onClick={handleSave}>save</button> : <></>}
+      </div>
       {edit ? (
         <Editor
           serverNote={serverNote}
@@ -122,7 +131,7 @@ export default function NoteView({
       {clientNote ? (
         <MarkdownView
           clientNote={clientNote}
-          style={{ gridRow: 2, gridColumn: edit ? 2 : 1 }}
+          style={{ gridRow: 2, gridColumn: edit ? 2 : "1/3" }}
         />
       ) : (
         <>here will be graph</>

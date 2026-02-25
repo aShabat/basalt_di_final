@@ -45,6 +45,9 @@ export async function getNote(user: string, path: string) {
 }
 
 export async function postNote(user: string, path: string, note: ApiPostNote) {
-  const response = await axiosI.post(`/notes/${user}/${path}`, note)
-  return response.data as string
+  const response = await axiosI.post(
+    `/notes/${user}${path === "" ? "" : "/" + path}`,
+    note,
+  )
+  return response.status
 }

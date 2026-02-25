@@ -61,6 +61,34 @@ router.get("/:name/*path", async (req, res) => {
   }
 })
 
+router.post("/:name", async (req, res) => {
+  try {
+    const { name } = req.params
+    if (name !== req.user?.name) {
+      res.sendStatus(401)
+      return
+    }
+    const body = req.body as ApiPostNote
+    const { user } = await getUser(name)
+    const root = await getFolders(user.id)
+    if (body.kind === "folder") {
+      const folder = await createFolder(user.id, undefined, body.title)
+      res.json(folderToApi(folder))
+    } else {
+      const note = await createNote(
+        user.id,
+        undefined,
+        body.title,
+        body.content || "",
+      )
+      res.send(note.content)
+    }
+  } catch (err) {
+    console.log(err)
+    res.sendStatus(404)
+  }
+})
+
 router.post("/:name/*path", async (req, res) => {
   try {
     const { name, path } = req.params

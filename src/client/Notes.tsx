@@ -13,11 +13,6 @@ export default function Notes({ className, style }: NotesProps) {
   const [root, setRoot] = useState<ApiFolder>()
   const navigate = useNavigate()
 
-  // @ts-ignore
-  function toggleEdit(e) {
-    e.preventDefault()
-    setEdit(!edit)
-  }
   useEffect(() => {
     ;(async () => {
       if (!user) {
@@ -36,7 +31,7 @@ export default function Notes({ className, style }: NotesProps) {
       style={{
         ...style,
         display: "grid",
-        gridTemplateColumns: "20% 1fr",
+        gridTemplateColumns: "30% 1fr",
         gridTemplateRows: "50px 1fr",
       }}
     >

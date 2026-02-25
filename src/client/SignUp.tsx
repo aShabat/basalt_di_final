@@ -55,12 +55,14 @@ export default function SignUp({ className, style }: SignUpProps) {
         name="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        type="password"
       />
       <label>Repeat Password: </label>
       <input
         name="passwor_repeat"
         value={secondPassword}
         onChange={(e) => setSecondPassword(e.target.value)}
+        type="password"
       />
       <button onClick={handleSubmit}> Sign Up </button>
     </div>

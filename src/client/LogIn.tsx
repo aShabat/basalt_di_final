@@ -15,7 +15,6 @@ export default function LogIn({ className, style }: LogInProps) {
   // @ts-ignore
   async function handleSubmit(event) {
     try {
-      console.log("submit")
       event.preventDefault()
       const { status, user } = await postUser(name, password)
       if (status === 200) {
@@ -43,6 +42,7 @@ export default function LogIn({ className, style }: LogInProps) {
         name="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        type="password"
       />
       <button onClick={handleSubmit}> Log In </button>
     </div>

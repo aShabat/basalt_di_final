@@ -1,5 +1,7 @@
+body {
+  height: 100%;
+}
 #root {
-  margin: 10%;
 }
 
 .authForm {
