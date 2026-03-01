@@ -1,5 +1,5 @@
 import axios from "axios"
-import type { ApiFolder, ApiPostNote } from "../server/types"
+import type { ApiFolder, ApiLink, ApiPostNote } from "../server/types"
 
 const axiosI = axios.create({ baseURL: "/api" })
 
@@ -50,4 +50,9 @@ export async function postNote(user: string, path: string, note: ApiPostNote) {
     note,
   )
   return response.status
+}
+
+export async function getLinks(user: string) {
+  const response = await axiosI.get(`/links/${user}`)
+  return response.data as ApiLink[]
 }

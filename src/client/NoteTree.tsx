@@ -110,7 +110,6 @@ export default function NoteTree({ className, style, root }: TreeProps) {
   const [notes, setNotes] = useState<JSX.Element[]>([])
 
   useEffect(() => {
-    console.log(root)
     if (!root) return
     setChildren(
       root.children.map((f) => (

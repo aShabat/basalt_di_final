@@ -93,7 +93,7 @@ export async function createFolder(
   } as Folder
 }
 
-export async function createNote(
+export async function createUpdateNote(
   user_id: number,
   parent_id: number | undefined,
   title: string,

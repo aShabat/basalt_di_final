@@ -44,3 +44,9 @@ export interface ApiPostNote {
   title: string
   content?: string
 }
+
+export interface ApiLink {
+  from: string
+  to: string
+  weight: number
+}

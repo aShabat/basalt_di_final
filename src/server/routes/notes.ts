@@ -3,10 +3,11 @@ import { Folder, Note, ApiFolder, ApiNote, ApiPostNote } from "../types.ts"
 import { getUser } from "../models/users.ts"
 import {
   createFolder,
-  createNote,
+  createUpdateNote,
   getFolders,
   getNote,
 } from "../models/notes.ts"
+import { genLinks } from "../models/links.ts"
 
 const router = Router()
 
@@ -75,7 +76,7 @@ router.post("/:name", async (req, res) => {
       const folder = await createFolder(user.id, undefined, body.title)
       res.json(folderToApi(folder))
     } else {
-      const note = await createNote(
+      const note = await createUpdateNote(
         user.id,
         undefined,
         body.title,
@@ -104,11 +105,16 @@ router.post("/:name/*path", async (req, res) => {
       const folder = await createFolder(user.id, parentFolder.id, body.title)
       res.json(folderToApi(folder))
     } else {
-      const note = await createNote(
+      const note = await createUpdateNote(
         user.id,
         parentFolder.id,
         body.title,
         body.content || "",
+      )
+      await genLinks(
+        user.id,
+        ["", name, ...path, note.title].join("/"),
+        note.content!,
       )
       res.send(note.content)
     }

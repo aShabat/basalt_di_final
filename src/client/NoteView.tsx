@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router"
 import { getNote, postNote } from "./api"
 import UserContext from "./UserContext"
 import Props from "./Props"
+import Graph from "./Graph"
 
 interface EditorProps extends Props {
   serverNote?: string
@@ -104,7 +105,8 @@ export default function NoteView({
       setServerNote(c)
       setClientNote(c)
     })()
-  }, [path])
+  }, [path, user])
+
   return (
     <div
       className={className}
@@ -134,7 +136,7 @@ export default function NoteView({
           style={{ gridRow: 2, gridColumn: edit ? 2 : "1/3" }}
         />
       ) : (
-        <>here will be graph</>
+        <Graph />
       )}
     </div>
   )
