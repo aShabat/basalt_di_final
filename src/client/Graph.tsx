@@ -1,7 +1,15 @@
-import { RefObject, useContext, useEffect, useRef, useState } from "react"
+import {
+  MouseEventHandler,
+  RefObject,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react"
 import Props from "./Props"
 import UserContext from "./UserContext"
 import { getLinks } from "./api"
+import { useNavigate } from "react-router"
 
 interface Point {
   x: number
@@ -26,6 +34,10 @@ interface PointProps extends Props {
   mouseY: RefObject<number>
   mouseXAbsolute: RefObject<number>
   mouseYAbsolute: RefObject<number>
+
+  onClick: MouseEventHandler
+
+  path: string
 }
 function Point({
   x,
@@ -36,6 +48,8 @@ function Point({
   mouseXAbsolute,
   mouseY,
   mouseYAbsolute,
+  onClick,
+  path,
 }: PointProps) {
   //@ts-ignore
   function handleMouseDown(e) {
@@ -45,11 +59,24 @@ function Point({
     mouseX.current = x
     mouseY.current = y
   }
-  return <circle r={10} cx={x} cy={y} onMouseDown={handleMouseDown} />
+  return (
+    <circle
+      r={10}
+      cx={x}
+      cy={y}
+      onMouseDown={handleMouseDown}
+      onDoubleClick={onClick}
+    >
+      <title> {path} </title>
+    </circle>
+  )
 }
 
-interface GraphProps extends Props {}
-export default function Graph({ className }: GraphProps) {
+interface GraphProps extends Props {
+  width: number
+  height: number
+}
+export default function Graph({ className, width, height }: GraphProps) {
   const graph = useRef<SVGSVGElement>(null)
   const [user, _] = useContext(UserContext)
   const [points, setPoints] = useState<Point[]>()
@@ -65,13 +92,17 @@ export default function Graph({ className }: GraphProps) {
 
   function animationTick() {
     if (!points) return
+
     const k = 1e-1
     const t = 0.1
     const l_min = 50
     const l_max = 300
 
     if (!points || !edges) return
-    const forces = points.map((_) => [0, 0])
+    const forces = points.map(({ x, y }) => [
+      Math.pow((width / 2 - x) * k * t, 5),
+      Math.pow((height / 2 - y) * k * t, 5),
+    ])
     for (const { from, to, weight } of edges) {
       const first = points[from]
       const second = points[to]
@@ -104,13 +135,20 @@ export default function Graph({ className }: GraphProps) {
             }
           : {
               path,
-              x: x + vx,
-              y: y + vy,
+              x: Math.max(Math.min(x + vx, width), 0),
+              y: Math.max(Math.min(y + vy, height), 0),
               vx: vx * t + forces[i][0],
               vy: vy * t + forces[i][1],
             },
       ),
     )
+  }
+
+  const navigate = useNavigate()
+  function genHandleClick(path: string) {
+    return () => {
+      navigate(path)
+    }
   }
 
   useEffect(() => {
@@ -157,7 +195,7 @@ export default function Graph({ className }: GraphProps) {
   useEffect(() => {
     const animationId = setInterval(() => {
       animationTick()
-    }, 100)
+    }, 50)
     return () => {
       clearInterval(animationId)
     }
@@ -167,8 +205,8 @@ export default function Graph({ className }: GraphProps) {
     <svg
       className={className}
       ref={graph}
-      width={500}
-      height={500}
+      width={width}
+      height={height}
       onMouseMove={(e) => {
         mouseXRef.current = e.clientX
         mouseYRef.current = e.clientY
@@ -188,6 +226,8 @@ export default function Graph({ className }: GraphProps) {
               mouseY={mouseYStartSVGRef}
               mouseXAbsolute={mouseXStartRef}
               mouseYAbsolute={mouseYStartRef}
+              onClick={genHandleClick(p.path)}
+              path={p.path}
             />
           )
         })}

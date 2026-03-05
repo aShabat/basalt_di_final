@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import { marked } from "marked"
-import { useNavigate, useParams } from "react-router"
+import { useLocation, useNavigate, useParams } from "react-router"
 import { getNote, postNote } from "./api"
 import UserContext from "./UserContext"
 import Props from "./Props"
@@ -80,6 +80,7 @@ export default function NoteView({
 
   const [user, _] = useContext(UserContext)
   const path = useParams()["*"]
+  const location = useLocation()
 
   function toggleEdit() {
     setEdit(!edit)
@@ -100,12 +101,17 @@ export default function NoteView({
 
   useEffect(() => {
     ;(async () => {
-      if (!user || !path) return
+      if (!user) return
+      if (!path) {
+        setClientNote(undefined)
+        setServerNote(undefined)
+        return
+      }
       const c = await getNote(user, path)
       setServerNote(c)
       setClientNote(c)
     })()
-  }, [path, user])
+  }, [path, user, location])
 
   return (
     <div
@@ -136,7 +142,7 @@ export default function NoteView({
           style={{ gridRow: 2, gridColumn: edit ? 2 : "1/3" }}
         />
       ) : (
-        <Graph />
+        <Graph width={500} height={500} />
       )}
     </div>
   )

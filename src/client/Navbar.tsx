@@ -1,4 +1,4 @@
-import { CSSProperties, useContext } from "react"
+import { useContext } from "react"
 import UserContext from "./UserContext"
 import { useNavigate } from "react-router"
 import { postLogout } from "./api"
@@ -24,10 +24,15 @@ export default function Navbar({ className, style }: NavbarProps) {
     navigate("/")
   }
 
+  function handleHome() {
+    navigate(`/${user}`)
+  }
+
   return (
     <div className={className} style={style}>
       {user ? (
         <>
+          <button onClick={handleHome}>home</button>
           <button onClick={handleLogOut}>log out</button>
         </>
       ) : (
